@@ -31,4 +31,5 @@
 - sare clients ke pass bhejna he -> io.emit()
 
 - Event Acknowledgement: sender gets notified that the reciever has recieved the message/data.
-- socket.emit() ka last argument -> a function -> runs on the sender when the message has been recieved by the reciever.
+- Step 1 - socket.emit() ka last argument -> a function -> runs on the sender when the message has been recieved by the reciever.
+- Step 2 - a last argument to the event listner on the reciever is the function we supplied to emit(), we can call it "callback".

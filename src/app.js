@@ -1,6 +1,7 @@
 const http = require("http");
 const express = require("express");
 const path = require("path");
+const Filter = require("bad-words");
 
 const app = express();
 
@@ -21,17 +22,26 @@ io.on("connection", (socket) => {
   // telling all users except the one on the current socket that a user has connected
   socket.broadcast.emit("newUserMessage", "New user has joined");
 
-  socket.on("sendMessage", (message) => {
-    io.emit("recieveMessage", message);
+  socket.on("sendMessage", (message, callback) => {
+    const filter = new Filter();
+
+    let status = "REJECTED";
+    if (!filter.isProfane(message)) {
+      io.emit("recieveMessage", message);
+      status = "SENT";
+    }
+
+    callback({ timestamp: Date.now(), status }); // acknowledging the event
   });
 
-  socket.on("sendCoords", ({ latitude, longitude }) => {
+  socket.on("sendCoords", ({ latitude, longitude }, callback) => {
     console.log(latitude);
     console.log(longitude);
     io.emit(
       "recieveCoordsLink",
       `https://www.google.com/maps?q=${latitude},${longitude}`
     );
+    callback(); // acknowledging the event
   });
 
   // following will run when the client of this particular socket disconnects
