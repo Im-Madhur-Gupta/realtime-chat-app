@@ -12,14 +12,23 @@
         align-items: center;
       }
       img {
-        height: 80vh;
+        margin-top: 5%;
+        height: 40vh;
       }
     </style>
   </head>
   <body>
     <div>
       <h1>Realtime Chat App</h1>
+      <form id="message-form">
+        <input type="text" placeholder="your message" name="message" />
+        <button type="submit">Send to Everyone</button>
+        <button type="button" id="location-btn">Send Location</button>
+      </form>
       <img src="fall.jpg" alt="fall" />
     </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/chat.js"></script>
   </body>
 </html>

@@ -1,0 +1,34 @@
+- full-duplex communication:
+    - 2-way communication
+    - Can be triggered by the server as well as the client.
+
+- WebSocket protocol is different from HTTP.
+- WebSocket protocol allows full-duplex communication.
+- HTTP allows only one way communication ie can be triggered only from the client.
+
+- We will use Socket.io library to build our app.
+
+- socketIOServer.on()
+    - Its basically attaching an event listner to an event
+    - on(<name of the event>, ()=>{
+        function that runs when this event occurs
+    })
+
+- Some events -
+    1. connection
+        - Fired when a client connects to our Socket.io configured server.
+
+- Client Side Code -
+    - Socket.io provides us code that can be used to connect to our server from a client. (check index.html)
+
+- Event Listner can be added using socket.on() and an event can be emitted using socket.emit().
+
+- Broadcasting an event - yaha pe ek event emit karte for all the clients except the one on the current socket.
+- Eg. say a new user has joined our chat room, then we can Broadcast a message saying that a "new user has joined" to everyone except the current new user.
+
+- for broadcasting -> socket.broadcast.emit()
+- sirf current socket ke client ke pass bhejna he -> socket.emit()
+- sare clients ke pass bhejna he -> io.emit()
+
+- Event Acknowledgement: sender gets notified that the reciever has recieved the message/data.
+- socket.emit() ka last argument -> a function -> runs on the sender when the message has been recieved by the reciever.
