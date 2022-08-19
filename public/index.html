@@ -1,39 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Realtime Chat App</title>
-    <style>
-      div {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      img {
-        margin-top: 5%;
-        height: 40vh;
-      }
-    </style>
-  </head>
-  <body>
-    <div>
-      <h1>Realtime Chat App</h1>
-      <form id="message-form">
-        <input
-          id="message-input"
-          type="text"
-          placeholder="your message"
-          name="message"
-        />
-        <button id="send-message-btn" type="submit">Send Message</button>
-        <button type="button" id="location-btn">Send Location</button>
-      </form>
-      <img src="fall.jpg" alt="fall" />
-    </div>
-
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="js/chat.js"></script>
-  </body>
+<html>
+    <head>
+        <title>Chat App</title>
+        <link rel="icon" href="/img/favicon.png">
+        <link rel="stylesheet" href="/css/styles.min.css">
+    </head>
+    <body>
+        <div class="centered-form">
+            <div class="centered-form__box">
+                <h1>Join</h1>
+                <form action="/chat.html">
+                    <label>Display name</label>
+                    <input type="text" name="username" placeholder="Display name" required>
+                    <label>Room</label>
+                    <input type="text" name="room" placeholder="Room" required>
+                    <button>Join</button>
+                </form>
+            </div>
+        </div>
+    </body>
 </html>

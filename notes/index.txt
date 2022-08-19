@@ -33,3 +33,11 @@
 - Event Acknowledgement: sender gets notified that the reciever has recieved the message/data.
 - Step 1 - socket.emit() ka last argument -> a function -> runs on the sender when the message has been recieved by the reciever.
 - Step 2 - a last argument to the event listner on the reciever is the function we supplied to emit(), we can call it "callback".
+
+- We will use Moment.js library for timestamp formatting.
+
+- Socket.io rooms
+    - Rooms can be created/joined by socket.join(<unique room parameter>)
+    - New ways to emit events only for the people in a room:
+        1. io.to(<unique room parameter>).emit() -> to all the people present in the room.
+        2. socket.broadcast.to(<unique room parameter>).emit() -> to all people in the room except the current socket's client/user.

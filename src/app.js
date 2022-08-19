@@ -1,54 +1,90 @@
+const path = require("path");
 const http = require("http");
 const express = require("express");
-const path = require("path");
+const socketio = require("socket.io");
 const Filter = require("bad-words");
+const {
+  generateMessage,
+  generateLocationMessage,
+} = require("./utils/messages");
+const {
+  addUser,
+  removeUser,
+  getUsersInRoom,
+  getUser,
+} = require("./utils/users");
 
 const app = express();
-
-const socketio = require("socket.io");
 const server = http.createServer(app);
-const io = new socketio.Server(server);
+const io = socketio(server);
 
-const publicDir = path.join(__dirname, "../public");
-app.use(express.static(publicDir));
+const publicDirectoryPath = path.join(__dirname, "../public");
 
-app.get("/", (req, res) => {
-  res.send("Realtime Chat App");
-});
+app.use(express.static(publicDirectoryPath));
 
 io.on("connection", (socket) => {
-  socket.emit("welcomeMessage", "Welcome to the chat app");
+  console.log("New WebSocket connection");
 
-  // telling all users except the one on the current socket that a user has connected
-  socket.broadcast.emit("newUserMessage", "New user has joined");
+  socket.on("join", (options, callback) => {
+    const { user, error } = addUser({ id: socket.id, ...options });
+
+    if (error) {
+      return callback(error);
+    }
+
+    socket.join(user.room);
+
+    socket.emit("message", generateMessage("Welcome!", "Admin"));
+    socket.broadcast
+      .to(user.room)
+      .emit(
+        "message",
+        generateMessage(`${user.username} has joined!`, "Admin")
+      );
+
+    io.to(user.room).emit("roomData", {
+      room: user.room,
+      users: getUsersInRoom(user.room),
+    });
+
+    callback();
+  });
 
   socket.on("sendMessage", (message, callback) => {
     const filter = new Filter();
 
-    let status = "REJECTED";
-    if (!filter.isProfane(message)) {
-      io.emit("recieveMessage", message);
-      status = "SENT";
+    if (filter.isProfane(message)) {
+      return callback("Profanity is not allowed!");
     }
 
-    callback({ timestamp: Date.now(), status }); // acknowledging the event
+    const user = getUser(socket.id);
+
+    io.to(user.room).emit("message", generateMessage(message, user.username));
+    callback();
   });
 
-  socket.on("sendCoords", ({ latitude, longitude }, callback) => {
-    console.log(latitude);
-    console.log(longitude);
-    io.emit(
-      "recieveCoordsLink",
-      `https://www.google.com/maps?q=${latitude},${longitude}`
+  socket.on("sendLocation", (coords, callback) => {
+    const user = getUser(socket.id);
+
+    io.to(user.room).emit(
+      "locationMessage",
+      generateLocationMessage(
+        `https://google.com/maps?q=${coords.latitude},${coords.longitude}`,
+        user.username
+      )
     );
-    callback(); // acknowledging the event
+    callback();
   });
 
-  // following will run when the client of this particular socket disconnects
   socket.on("disconnect", () => {
-    // because the current client has already disconnected so we dont have to broadcast a message
-    // io.emit() gets the job done.
-    io.emit("goodbyeMessage", "A user has left the chat");
+    const user = removeUser(socket.id);
+
+    if (user) {
+      io.to(user.room).emit(
+        "message",
+        generateMessage(`${user.username} has left the room!`, "Admin")
+      );
+    }
   });
 });
 
